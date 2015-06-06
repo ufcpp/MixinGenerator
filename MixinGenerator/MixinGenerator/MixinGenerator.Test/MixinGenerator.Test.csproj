@@ -104,13 +104,16 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DataSource\UsageTest\DoNotAllowMarkingPrivateAndProtected\Source.cs" />
+    <None Include="DataSource\UsageTest\DoNotMarkAsBothPrivateAndProtected\Source.cs" />
     <None Include="DataSource\UsageTest\Accessibility\NewSource.cs" />
     <None Include="DataSource\UsageTest\Accessibility\Source.cs" />
     <None Include="DataSource\MixinsTest\NotifyPropertyChangedMixin\NewSource.cs" />
     <None Include="DataSource\MixinsTest\NotifyPropertyChangedMixin\Source.cs" />
     <None Include="DataSource\MixinsTest\CompositeDisposableMixin\NewSource.cs" />
     <None Include="DataSource\MixinsTest\CompositeDisposableMixin\Source.cs" />
+    <None Include="DataSource\UsageTest\DoNotUseProperty\Source.cs" />
+    <None Include="DataSource\UsageTest\DoNotUseReadOnlyField\Source.cs" />
+    <None Include="DataSource\UsageTest\DoNotUseAssignment\Source.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\ContractCodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
