@@ -69,14 +69,8 @@ namespace MixinGenerator.Test
             VerifyCSharpFix(test, fixtest);
         }
 
-        protected override CodeFixProvider GetCSharpCodeFixProvider()
-        {
-            return new MixinGeneratorCodeFixProvider();
-        }
+        protected override CodeFixProvider GetCSharpCodeFixProvider() => new MixinGeneratorCodeFixProvider();
 
-        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-        {
-            return new MixinGeneratorAnalyzer();
-        }
+        protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MixinGeneratorAnalyzer();
     }
 }

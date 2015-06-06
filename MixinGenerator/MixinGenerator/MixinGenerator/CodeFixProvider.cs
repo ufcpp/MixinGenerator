@@ -18,15 +18,9 @@ namespace MixinGenerator
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MixinGeneratorCodeFixProvider)), Shared]
     public class MixinGeneratorCodeFixProvider : CodeFixProvider
     {
-        public sealed override ImmutableArray<string> FixableDiagnosticIds
-        {
-            get { return ImmutableArray.Create(MixinGeneratorAnalyzer.DiagnosticId); }
-        }
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(MixinGeneratorAnalyzer.DiagnosticId);
 
-        public sealed override FixAllProvider GetFixAllProvider()
-        {
-            return WellKnownFixAllProviders.BatchFixer;
-        }
+        public sealed override FixAllProvider GetFixAllProvider() => WellKnownFixAllProviders.BatchFixer;
 
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
