@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MergeableAttribute.cs" />
     <Compile Include="MixinAttribute.cs" />
     <Compile Include="PrimaryPropertyAttribute.cs" />
     <Compile Include="ProtectedAttribute.cs" />

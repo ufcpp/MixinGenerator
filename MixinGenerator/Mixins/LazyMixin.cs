@@ -1,4 +1,5 @@
-﻿using Mixins.Annotations;
+﻿using System;
+using Mixins.Annotations;
 
 namespace Mixins
 {
@@ -16,5 +17,16 @@ namespace Mixins
 
         [Private]
         public bool HasValue => _value != null;
+
+        [Private]
+        public void Dispose()
+        {
+            if (_value != null)
+            {
+                var d = _value as IDisposable;
+                d?.Dispose();
+                _value = null;
+            }
+        }
     }
 }

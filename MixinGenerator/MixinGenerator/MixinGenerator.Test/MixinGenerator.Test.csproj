@@ -109,6 +109,8 @@
     <None Include="DataSource\Accessibility\Source.cs" />
     <None Include="DataSource\NotifyPropertyChangedMixin\NewSource.cs" />
     <None Include="DataSource\NotifyPropertyChangedMixin\Source.cs" />
+    <None Include="DataSource\CompositeDisposableMixin\NewSource.cs" />
+    <None Include="DataSource\CompositeDisposableMixin\Source.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\ContractCodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />

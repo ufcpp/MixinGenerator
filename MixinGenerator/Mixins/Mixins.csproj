@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompositeDisposableMixin.cs" />
     <Compile Include="LazyMixin.cs" />
     <Compile Include="NotifyPropertyChangedAlwaysMixin.cs" />
     <Compile Include="NotifyPropertyChangedReferenceMixin.cs" />
