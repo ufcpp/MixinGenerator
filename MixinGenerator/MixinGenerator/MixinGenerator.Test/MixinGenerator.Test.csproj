@@ -107,6 +107,8 @@
     <None Include="DataSource\DoNotAllowMarkingPrivateAndProtected\Source.cs" />
     <None Include="DataSource\Accessibility\NewSource.cs" />
     <None Include="DataSource\Accessibility\Source.cs" />
+    <None Include="DataSource\NotifyPropertyChangedMixin\NewSource.cs" />
+    <None Include="DataSource\NotifyPropertyChangedMixin\Source.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\ContractCodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />

@@ -41,6 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LazyMixin.cs" />
+    <Compile Include="NotifyPropertyChangedAlwaysMixin.cs" />
+    <Compile Include="NotifyPropertyChangedReferenceMixin.cs" />
+    <Compile Include="NotifyPropertyChangedMixin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
