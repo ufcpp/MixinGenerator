@@ -114,6 +114,7 @@
     <None Include="DataSource\UsageTest\DoNotUseProperty\Source.cs" />
     <None Include="DataSource\UsageTest\DoNotUseReadOnlyField\Source.cs" />
     <None Include="DataSource\UsageTest\DoNotUseAssignment\Source.cs" />
+    <None Include="DataSource\UsageTest\MergeableMethodMustBeVoid\Source.cs" />
     <Compile Include="Verifiers\CodeFixVerifier.cs" />
     <Compile Include="Verifiers\ContractCodeFixVerifier.cs" />
     <Compile Include="Verifiers\DiagnosticVerifier.cs" />
