@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
 
 namespace TestHelper
 {
@@ -25,22 +29,19 @@ namespace TestHelper
             return File.ReadAllText(path);
         }
 
-        protected void VerifyDiagnostic(DiagnosticResult[] expectedResults, [CallerMemberName]string testName = null)
+        protected void VerifyDiagnostic([CallerMemberName]string testName = null)
         {
             var sourcePath = Path.Combine(DataSourcePath, testName, "Source.cs");
             var source = File.ReadAllText(sourcePath);
             source = HeaderSource + source + FooterSource;
 
+            var resultsPath = Path.Combine(DataSourcePath, testName, "Results.csv");
+            var expectedResults = ReadResults(resultsPath).ToArray();
+
             VerifyCSharpDiagnostic(source, expectedResults);
         }
 
-        protected void VerifyDiagnostic([CallerMemberName]string testName = null)
-            => VerifyDiagnostic(new DiagnosticResult[0], testName);
-
-        protected void VerifyDiagnostic(DiagnosticResult expected, [CallerMemberName]string testName = null)
-            => VerifyDiagnostic(new[] { expected }, testName);
-
-        protected void VerifyCodeFix(DiagnosticResult[] expectedResults, [CallerMemberName]string testName = null)
+        protected void VerifyCodeFix([CallerMemberName]string testName = null)
         {
             var sourcePath = Path.Combine(DataSourcePath, testName, "Source.cs");
             var source = File.ReadAllText(sourcePath);
@@ -50,14 +51,44 @@ namespace TestHelper
             var newSource = File.ReadAllText(newSourcePath);
             newSource = HeaderSource + newSource + FooterSource;
 
+            var resultsPath = Path.Combine(DataSourcePath, testName, "Results.csv");
+            var expectedResults = ReadResults(resultsPath).ToArray();
+
             VerifyCSharpDiagnostic(source, expectedResults);
             VerifyCSharpFix(source, newSource);
         }
 
-        protected void VerifyCodeFix([CallerMemberName]string testName = null)
-            => VerifyCodeFix(new DiagnosticResult[0], testName);
+        private IEnumerable<DiagnosticResult> ReadResults(string path)
+        {
+            if (!File.Exists(path)) yield break;
 
-        protected void VerifyCodeFix(DiagnosticResult expected, [CallerMemberName]string testName = null)
-            => VerifyCodeFix(new[] { expected }, testName);
+            foreach (var line in File.ReadLines(path))
+            {
+                var tokens = line.Split(',');
+                tokens = tokens.Select(x => x.Trim(' ')).ToArray();
+
+                var id = tokens[0];
+                DiagnosticSeverity severity;
+                Enum.TryParse(tokens[1], out severity);
+                var lineNo = int.Parse(tokens[2]);
+                var column = int.Parse(tokens[3]);
+                var args = tokens.Skip(4).ToArray();
+
+                yield return GetResult(id, severity, lineNo, column, args);
+            }
+        }
+
+        protected DiagnosticResult GetResult(string diagnosticId, DiagnosticSeverity serivity, int line, int column, params string[] messageArgs)
+        {
+            var analyser = GetCSharpDiagnosticAnalyzer();
+            var diag = analyser.SupportedDiagnostics.First(x => x.Id == diagnosticId);
+            return new DiagnosticResult
+            {
+                Id = diagnosticId,
+                Message = string.Format(diag.MessageFormat.ToString(), (object[])messageArgs),
+                Severity = serivity,
+                Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) },
+            };
+        }
     }
 }
