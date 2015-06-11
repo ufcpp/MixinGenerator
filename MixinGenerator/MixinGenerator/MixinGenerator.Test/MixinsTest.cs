@@ -6,14 +6,14 @@ using TestHelper;
 namespace MixinGenerator.Test
 {
     [TestClass]
-    public class MixinsTest : ContractCodeFixVerifier
+    public class MixinsTest : ConventionCodeFixVerifier
     {
         [TestMethod]
-        public void CompositeDisposableMixin() => VerifyDiagnostic();
+        public void CompositeDisposableMixin() => VerifyCSharpByConvention();
         [TestMethod]
-        public void LazyMixin() => VerifyDiagnostic();
+        public void LazyMixin() => VerifyCSharpByConvention();
         [TestMethod]
-        public void NotifyPropertyChangedMixin() => VerifyDiagnostic();
+        public void NotifyPropertyChangedMixin() => VerifyCSharpByConvention();
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new MixinGeneratorCodeFixProvider();
 

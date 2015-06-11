@@ -6,20 +6,20 @@ using TestHelper;
 namespace MixinGenerator.Test
 {
     [TestClass]
-    public class UsageTest : ContractCodeFixVerifier
+    public class UsageTest : ConventionCodeFixVerifier
     {
         [TestMethod]
-        public void Accessibility() => VerifyDiagnostic();
+        public void Accessibility() => VerifyCSharpByConvention();
         [TestMethod]
-        public void DoNotMarkAsBothPrivateAndProtected() => VerifyDiagnostic();
+        public void DoNotMarkAsBothPrivateAndProtected() => VerifyCSharpByConvention();
         [TestMethod]
-        public void DoNotUseAssignment() => VerifyDiagnostic();
+        public void DoNotUseAssignment() => VerifyCSharpByConvention();
         [TestMethod]
-        public void DoNotUseProperty() => VerifyDiagnostic();
+        public void DoNotUseProperty() => VerifyCSharpByConvention();
         [TestMethod]
-        public void DoNotUseReadOnlyField() => VerifyDiagnostic();
+        public void DoNotUseReadOnlyField() => VerifyCSharpByConvention();
         [TestMethod]
-        public void MergeableMethodMustBeVoid() => VerifyDiagnostic();
+        public void MergeableMethodMustBeVoid() => VerifyCSharpByConvention();
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new MixinGeneratorCodeFixProvider();
 
