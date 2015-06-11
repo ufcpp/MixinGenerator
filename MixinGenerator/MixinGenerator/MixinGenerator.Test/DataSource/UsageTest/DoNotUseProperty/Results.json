@@ -1,0 +1,38 @@
+[
+  {
+    "id": "MixinNoProperty",
+    "sevirity": 3,
+    "line": 7,
+    "column": 9,
+    "message-args": [
+      "Mixin1"
+    ]
+  },
+  {
+    "id": "MixinNoProperty",
+    "sevirity": 3,
+    "line": 9,
+    "column": 9,
+    "message-args": [
+      "Mixin2"
+    ]
+  },
+  {
+    "id": "MixinNoProperty",
+    "sevirity": 3,
+    "line": 11,
+    "column": 9,
+    "message-args": [
+      "Mixin3"
+    ]
+  },
+  {
+    "id": "MixinNoProperty",
+    "sevirity": 3,
+    "line": 14,
+    "column": 9,
+    "message-args": [
+      "Mixin4"
+    ]
+  }
+]

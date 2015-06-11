@@ -1,0 +1,20 @@
+[
+  {
+    "id": "ExpandMixin",
+    "sevirity": 1,
+    "line": 12,
+    "column": 9,
+    "message-args": [
+      "_a"
+    ]
+  },
+  {
+    "id": "ExpandMixin",
+    "sevirity": 1,
+    "line": 12,
+    "column": 9,
+    "message-args": [
+      "_b"
+    ]
+  }
+]

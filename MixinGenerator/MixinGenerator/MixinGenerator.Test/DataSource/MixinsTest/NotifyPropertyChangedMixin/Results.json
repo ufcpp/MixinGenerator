@@ -1,0 +1,11 @@
+[
+  {
+    "id": "ExpandMixin",
+    "sevirity": 1,
+    "line": 7,
+    "column": 9,
+    "message-args": [
+      "_npc"
+    ]
+  }
+]

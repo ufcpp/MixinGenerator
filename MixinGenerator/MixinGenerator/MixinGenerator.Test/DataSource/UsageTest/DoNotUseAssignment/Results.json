@@ -1,0 +1,14 @@
+[
+  {
+    "id": "MixinNoAssignment",
+    "sevirity": 3,
+    "line": 11,
+    "column": 13
+  },
+  {
+    "id": "MixinNoAssignment",
+    "sevirity": 3,
+    "line": 16,
+    "column": 13
+  }
+]
