@@ -1,0 +1,10 @@
+﻿[
+  {
+    "id": "Mixin",
+    "sevirity": "Info",
+    "line": 5,
+    "column": 21,
+    "path": "Class1.csx",
+    "message-args": [ "MyMixin" ]
+  }
+]
