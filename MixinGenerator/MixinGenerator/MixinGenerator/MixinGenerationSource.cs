@@ -41,6 +41,8 @@ namespace MixinGenerator
             return new MixinGenerationSource(semanticModel, field, mixinType, declaringType, cancellationToken);
         }
 
+        public string FieldName => Field.Identifier.ValueText;
+
         private StringBuilder _stringBuilder;
 
         public StringBuilder GetBuilder()
@@ -51,7 +53,5 @@ namespace MixinGenerator
         }
 
         public string GetTypeName(ITypeSymbol t) => t.ToMinimalDisplayString(SemanticModel, 0);
-
-        public string FieldName => Field.Identifier.ValueText;
     }
 }

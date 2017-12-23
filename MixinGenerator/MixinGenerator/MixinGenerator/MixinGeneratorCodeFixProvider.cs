@@ -155,18 +155,52 @@ namespace MixinGenerator
                 .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
         }
 
+        private static MemberDeclarationSyntax GenerateNodes(IEventSymbol s, MixinGenerationSource gen)
+        {
+            var source = gen.GetBuilder();
+            source.Append("public event ", gen.GetTypeName(s.Type), " ", s.Name)
+                .Append(" { add => ", gen.FieldName, ".", s.Name, " += value;")
+                .Append(" remove => ", gen.FieldName, ".", s.Name, " -= value; }");
+
+            return ParseCompilationUnit(source.ToString()).Members[0]
+                .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
+                .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
+        }
+
         private static MemberDeclarationSyntax GenerateNodes(IMethodSymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append("public ", gen.GetTypeName(s.ReturnType), " ", s.Name, "(");
+            source.Append("public ", gen.GetTypeName(s.ReturnType), " ");
+            GenerateGenericMethodName(s, source);
+            source.Append("(");
             GenerateParameters(gen, s.Parameters, source);
-            source.Append(") => ", gen.FieldName, ".", s.Name, "(");
-            GenerateArguments(gen, s.Parameters, source);
+            source.Append(") => ", gen.FieldName, ".");
+            GenerateGenericMethodName(s, source);
+            source.Append("(");
+            GenerateArguments(s.Parameters, source);
             source.Append(");");
 
             return ParseCompilationUnit(source.ToString()).Members[0]
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
                 .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
+        }
+
+        private static void GenerateGenericMethodName(IMethodSymbol m, StringBuilder source)
+        {
+            source.Append(m.Name);
+
+            if (m.IsGenericMethod)
+            {
+                source.Append("<");
+                bool first = true;
+                foreach (var a in m.TypeArguments)
+                {
+                    source.Append(a.Name);
+                    if (first) first = false;
+                    else source.Append(", ");
+                }
+                source.Append(">");
+            }
         }
 
         private static void GenerateParameters(MixinGenerationSource gen, ImmutableArray<IParameterSymbol> parameters, StringBuilder source)
@@ -180,7 +214,7 @@ namespace MixinGenerator
             }
         }
 
-        private static void GenerateArguments(MixinGenerationSource gen, ImmutableArray<IParameterSymbol> parameters, StringBuilder source)
+        private static void GenerateArguments(ImmutableArray<IParameterSymbol> parameters, StringBuilder source)
         {
             bool first = true;
             foreach (var p in parameters)
@@ -189,18 +223,6 @@ namespace MixinGenerator
                 if (first) first = false;
                 else source.Append(", ");
             }
-        }
-
-        private static MemberDeclarationSyntax GenerateNodes(IEventSymbol s, MixinGenerationSource gen)
-        {
-            var source = gen.GetBuilder();
-            source.Append("public event ", gen.GetTypeName(s.Type), " ", s.Name)
-                .Append(" { add => ", gen.FieldName, ".", s.Name, " += value;")
-                .Append(" remove => ", gen.FieldName, ".", s.Name, " -= value; }");
-
-            return ParseCompilationUnit(source.ToString()).Members[0]
-                .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
-                .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
         }
     }
 }
