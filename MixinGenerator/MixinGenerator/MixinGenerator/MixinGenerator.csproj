@@ -9,18 +9,22 @@
   
   <PropertyGroup>
     <PackageId>MixinGenerator</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <Authors>AUTHOR_NAME</Authors>
-    <PackageLicenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</PackageLicenseUrl>
-    <PackageProjectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</PackageProjectUrl>
-    <PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>
-    <RepositoryUrl>http://REPOSITORY_URL_HERE_OR_DELETE_THIS_LINE</RepositoryUrl>
+    <PackageVersion>0.0.0.1</PackageVersion>
+    <Authors>Nobuyuki Iwanaga</Authors>
+    <PackageLicenseUrl>https://github.com/ufcpp/MixinGenerator/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ufcpp/MixinGenerator/</PackageProjectUrl>
+    <PackageIconUrl></PackageIconUrl>
+    <RepositoryUrl>https://github.com/ufcpp/MixinGenerator/</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>MixinGenerator</Description>
-    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
+    <PackageReleaseNotes>beta release.</PackageReleaseNotes>
     <Copyright>Copyright</Copyright>
     <PackageTags>MixinGenerator, analyzers</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
+    <Version>0.0.1</Version>
+    <Company>Nobuyuki Iwanaga</Company>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <FileVersion>0.0.1.0</FileVersion>
   </PropertyGroup>
    
   <ItemGroup>
