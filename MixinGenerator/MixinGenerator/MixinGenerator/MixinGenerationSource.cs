@@ -51,5 +51,7 @@ namespace MixinGenerator
         }
 
         public string GetTypeName(ITypeSymbol t) => t.ToMinimalDisplayString(SemanticModel, 0);
+
+        public string FieldName => Field.Identifier.ValueText;
     }
 }

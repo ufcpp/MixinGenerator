@@ -137,44 +137,36 @@ namespace MixinGenerator
 
         private static MemberDeclarationSyntax GenerateNodes(IPropertySymbol s, MixinGenerationSource gen)
         {
-            var mixinFieldName = gen.Field.Identifier.ValueText;
-
             var source = gen.GetBuilder();
             source.Append("public ", gen.GetTypeName(s.Type), " ", s.Name);
 
             if (s.SetMethod != null)
             {
-                source.Append(" { get => ", mixinFieldName, ".", s.Name)
-                    .Append("; set => ", mixinFieldName, ".", s.Name, " = value; }");
+                source.Append(" { get => ", gen.FieldName, ".", s.Name)
+                    .Append("; set => ", gen.FieldName, ".", s.Name, " = value; }");
             }
             else
             {
-                source.Append(" => ", mixinFieldName, ".", s.Name, ";");
+                source.Append(" => ", gen.FieldName, ".", s.Name, ";");
             }
 
-            var p = (PropertyDeclarationSyntax)ParseCompilationUnit(source.ToString()).Members[0];
-            return p
+            return ParseCompilationUnit(source.ToString()).Members[0]
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
-                .WithTrailingTrivia(gen.Field.GetTrailingTrivia())
-                ;
+                .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
         }
 
         private static MemberDeclarationSyntax GenerateNodes(IMethodSymbol s, MixinGenerationSource gen)
         {
-            var mixinFieldName = gen.Field.Identifier.ValueText;
-
             var source = gen.GetBuilder();
             source.Append("public ", gen.GetTypeName(s.ReturnType), " ", s.Name, "(");
             GenerateParameters(gen, s.Parameters, source);
-            source.Append(") => ", mixinFieldName, ".", s.Name, "(");
+            source.Append(") => ", gen.FieldName, ".", s.Name, "(");
             GenerateArguments(gen, s.Parameters, source);
             source.Append(");");
 
-            var m = (MethodDeclarationSyntax)ParseCompilationUnit(source.ToString()).Members[0];
-            return m
+            return ParseCompilationUnit(source.ToString()).Members[0]
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
-                .WithTrailingTrivia(gen.Field.GetTrailingTrivia())
-                ;
+                .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
         }
 
         private static void GenerateParameters(MixinGenerationSource gen, ImmutableArray<IParameterSymbol> parameters, StringBuilder source)
@@ -201,7 +193,14 @@ namespace MixinGenerator
 
         private static MemberDeclarationSyntax GenerateNodes(IEventSymbol s, MixinGenerationSource gen)
         {
-            throw new NotImplementedException();
+            var source = gen.GetBuilder();
+            source.Append("public event ", gen.GetTypeName(s.Type), " ", s.Name)
+                .Append(" { add => ", gen.FieldName, ".", s.Name, " += value;")
+                .Append(" remove => ", gen.FieldName, ".", s.Name, " -= value; }");
+
+            return ParseCompilationUnit(source.ToString()).Members[0]
+                .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
+                .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
         }
     }
 }
