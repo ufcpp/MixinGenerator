@@ -185,14 +185,8 @@ namespace TestHelper
 
             for (int i = 0; i < attempts; i++)
             {
-                var diag = fixableDiagnostics.First();
+                var diag = fixableDiagnostics[i];
                 var doc = project.Documents.FirstOrDefault(d => d.Name == diag.Location.SourceTree.FilePath);
-
-                if (doc == null)
-                {
-                    fixableDiagnostics = fixableDiagnostics.Skip(1).ToArray();
-                    continue;
-                }
 
                 var actions = new List<CodeAction>();
                 var fixContex = new CodeFixContext(doc, diag, (a, d) => actions.Add(a), CancellationToken.None);
@@ -211,8 +205,6 @@ namespace TestHelper
 
                 fixableDiagnostics = GetDiagnostics(project, analyzer)
                     .Where(d => fix.FixableDiagnosticIds.Contains(d.Id)).ToArray();
-
-                if (!fixableDiagnostics.Any()) break;
             }
 
             return project;
