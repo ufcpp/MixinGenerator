@@ -136,14 +136,23 @@ namespace MixinGenerator
 
         private static MemberDeclarationSyntax GenerateNodes(IPropertySymbol s, MixinGenerationSource gen)
         {
-            var typeName = s.Type.ToMinimalDisplayString(gen.SemanticModel, 0);
+            var typeName = gen.GetTypeName(s.Type);
+            var mixinFieldName = gen.Field.Identifier.ValueText;
 
-            var access = gen.Field.Identifier.ValueText + "." + s.Name;
-            var source = s.SetMethod != null
-                ? $"public {typeName} {s.Name} {{ get => {access}; set => {access} = value; }}"
-                : $"public {typeName} {s.Name} => {access};";
+            var source = gen.GetBuilder();
+            source.Append("public ", typeName, " ", s.Name);
 
-            var p = (PropertyDeclarationSyntax)ParseCompilationUnit(source).Members[0];
+            if (s.SetMethod != null)
+            {
+                source.Append(" { get => ", mixinFieldName, ".", s.Name)
+                    .Append("; set => ", mixinFieldName, ".", s.Name, " = value; }");
+            }
+            else
+            {
+                source.Append(" => ", mixinFieldName, ".", s.Name, ";");
+            }
+
+            var p = (PropertyDeclarationSyntax)ParseCompilationUnit(source.ToString()).Members[0];
             return p
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
                 .WithTrailingTrivia(gen.Field.GetTrailingTrivia())

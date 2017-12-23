@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,5 +40,16 @@ namespace MixinGenerator
 
             return new MixinGenerationSource(semanticModel, field, mixinType, declaringType, cancellationToken);
         }
+
+        private StringBuilder _stringBuilder;
+
+        public StringBuilder GetBuilder()
+        {
+            if (_stringBuilder == null) _stringBuilder = new StringBuilder(1024);
+            else _stringBuilder.Clear();
+            return _stringBuilder;
+        }
+
+        public string GetTypeName(ITypeSymbol t) => t.ToMinimalDisplayString(SemanticModel, 0);
     }
 }
