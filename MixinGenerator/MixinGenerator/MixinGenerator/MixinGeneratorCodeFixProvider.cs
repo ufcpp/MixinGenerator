@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CodeActions;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using System.IO;
+using System.Collections.Generic;
+using System;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace MixinGenerator
 {
@@ -27,59 +29,52 @@ namespace MixinGenerator
             return WellKnownFixAllProviders.BatchFixer;
         }
 
-        public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        public sealed override Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var diagnostic = context.Diagnostics.First();
-            var diagnosticSpan = diagnostic.Location.SourceSpan;
-
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            var field = (VariableDeclaratorSyntax)root.FindNode(diagnosticSpan);
+            var document = context.Document;
+            var diagnostic = context.Diagnostics[0];
 
             context.RegisterCodeFix(
                 CodeAction.Create(
                     title: title,
-                    createChangedSolution: c => GenerateMixin(context.Document, field, c),
+                    createChangedSolution: c => GenerateMixin(document, diagnostic, c),
                     equivalenceKey: title),
                 diagnostic);
+
+            return Task.CompletedTask;
         }
 
-        private async Task<Solution> GenerateMixin(Document document, VariableDeclaratorSyntax field, CancellationToken cancellationToken)
+        private async Task<Solution> GenerateMixin(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-
-            var declaringType = field.Ancestors().OfType<TypeDeclarationSyntax>().First();
-
-            return await GenerateMixinCode(document, declaringType, field, cancellationToken);
+            var gen = await MixinGenerationSource.Create(document, diagnostic, cancellationToken);
+            return await GenerateMixin(document, gen);
         }
 
-        private async Task<Solution> GenerateMixinCode(Document document, TypeDeclarationSyntax typeDecl, VariableDeclaratorSyntax field, CancellationToken cancellationToken)
+        private async Task<Solution> GenerateMixin(Document document, MixinGenerationSource gen)
         {
-            document = await AddPartialModifier(document, typeDecl, cancellationToken);
-            document = await AddNewDocument(document, typeDecl, field, cancellationToken);
+            document = await AddPartialModifier(document, gen);
+            document = await AddNewDocument(document, gen);
             return document.Project.Solution;
         }
 
-        private static async Task<Document> AddPartialModifier(Document document, TypeDeclarationSyntax typeDecl, CancellationToken cancellationToken)
+        private static async Task<Document> AddPartialModifier(Document document, MixinGenerationSource gen)
         {
-            var newTypeDecl = typeDecl.AddPartialModifier();
+            var newTypeDecl = gen.DeclaringType.AddPartialModifier();
 
-            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false) as CompilationUnitSyntax;
-            var newRoolt = root.ReplaceNode(typeDecl, newTypeDecl)
+            var root = await document.GetSyntaxRootAsync(gen.CancellationToken).ConfigureAwait(false) as CompilationUnitSyntax;
+            var newRoolt = root.ReplaceNode(gen.DeclaringType, newTypeDecl)
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
             document = document.WithSyntaxRoot(newRoolt);
             return document;
         }
 
-        private static async Task<Document> AddNewDocument(Document document, TypeDeclarationSyntax typeDecl, VariableDeclaratorSyntax field, CancellationToken cancellationToken)
+        private static async Task<Document> AddNewDocument(Document document, MixinGenerationSource gen)
         {
-            //var fieldDeclaration = ((VariableDeclarationSyntax)field.Parent).Type;
-            //var fieldType = semanticModel.GetTypeInfo(fieldDeclaration);
+            var newRoot = await GeneratePartialDeclaration(document, gen);
 
-            var newRoot = await GeneratePartialDeclaration(document, typeDecl, field, cancellationToken);
-
-            var name = typeDecl.Identifier.Text;
-            var generatedName = name + "." + field.Identifier.ValueText + ".cs";
+            var name = Path.GetFileNameWithoutExtension(document.Name);
+            var generatedName = name + "." + gen.Field.Identifier.ValueText + ".cs";
 
             var project = document.Project;
 
@@ -88,38 +83,81 @@ namespace MixinGenerator
             else return project.AddDocument(generatedName, newRoot, document.Folders);
         }
 
-        private static async Task<CompilationUnitSyntax> GeneratePartialDeclaration(Document document, TypeDeclarationSyntax typeDecl, VariableDeclaratorSyntax field, CancellationToken cancellationToken)
+        private static async Task<CompilationUnitSyntax> GeneratePartialDeclaration(Document document, MixinGenerationSource gen)
         {
-            var semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+            var newTypeDecl = gen.DeclaringType.GetPartialTypeDelaration();
+            var generatedNodes = GenerateNodes(newTypeDecl, gen).ToArray();
 
-            var ti = semanticModel.GetTypeInfo(typeDecl);
-
-            //var generatedNodes = GetGeneratedNodes(def, field).ToArray();
-
-            var newClassDecl = typeDecl.GetPartialTypeDelaration()
-                //.AddMembers(generatedNodes)
+            newTypeDecl = newTypeDecl
+                .AddMembers(generatedNodes)
                 .WithAdditionalAnnotations(Formatter.Annotation);
 
-            var ns = typeDecl.FirstAncestorOrSelf<NamespaceDeclarationSyntax>()?.Name.WithoutTrivia().GetText().ToString();
+            var ns = gen.DeclaringType.FirstAncestorOrSelf<NamespaceDeclarationSyntax>()?.Name.WithoutTrivia().GetText().ToString();
 
             MemberDeclarationSyntax topDecl;
             if (ns != null)
             {
                 topDecl = NamespaceDeclaration(IdentifierName(ns))
-                    .AddMembers(newClassDecl)
+                    .AddMembers(newTypeDecl)
                     .WithAdditionalAnnotations(Formatter.Annotation);
             }
             else
             {
-                topDecl = newClassDecl;
+                topDecl = newTypeDecl;
             }
 
-            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false) as CompilationUnitSyntax;
+            var root = await document.GetSyntaxRootAsync(gen.CancellationToken).ConfigureAwait(false) as CompilationUnitSyntax;
 
             return CompilationUnit().AddUsings(root.Usings.ToArray())
                 .AddMembers(topDecl)
                 .WithTrailingTrivia(CarriageReturnLineFeed)
                 .WithAdditionalAnnotations(Formatter.Annotation);
+        }
+
+        private static IEnumerable<MemberDeclarationSyntax> GenerateNodes(TypeDeclarationSyntax typeDecl, MixinGenerationSource gen)
+        {
+            foreach (var m in gen.MixinType.Type.GetMembers())
+            {
+                switch (m)
+                {
+                    case IPropertySymbol s:
+                        yield return GenerateNodes(s, gen);
+                        break;
+                    case IMethodSymbol s when s.MethodKind == MethodKind.Ordinary:
+                        yield return GenerateNodes(s, gen);
+                        break;
+                    case IEventSymbol s:
+                        yield return GenerateNodes(s, gen);
+                        break;
+                }
+            }
+            yield break;
+        }
+
+        private static MemberDeclarationSyntax GenerateNodes(IPropertySymbol s, MixinGenerationSource gen)
+        {
+            var typeName = s.Type.ToMinimalDisplayString(gen.SemanticModel, 0);
+
+            var access = gen.Field.Identifier.ValueText + "." + s.Name;
+            var source = s.SetMethod != null
+                ? $"public {typeName} {s.Name} {{ get => {access}; set => {access} = value; }}"
+                : $"public {typeName} {s.Name} => {access};";
+
+            var p = (PropertyDeclarationSyntax)ParseCompilationUnit(source).Members[0];
+            return p
+                .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
+                .WithTrailingTrivia(gen.Field.GetTrailingTrivia())
+                ;
+        }
+
+        private static MemberDeclarationSyntax GenerateNodes(IMethodSymbol s, MixinGenerationSource gen)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static MemberDeclarationSyntax GenerateNodes(IEventSymbol s, MixinGenerationSource gen)
+        {
+            throw new NotImplementedException();
         }
     }
 }

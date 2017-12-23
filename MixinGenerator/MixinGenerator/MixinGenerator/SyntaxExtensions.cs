@@ -29,5 +29,16 @@ partial {typeDecl.Keyword.ValueText} {typeDecl.Identifier.Text}
 {{
 }}
 ").GetRoot().ChildNodes().OfType<TypeDeclarationSyntax>().First();
+
+        public static TypeDeclarationSyntax AddMembers(this TypeDeclarationSyntax typeDecl, MemberDeclarationSyntax[] items)
+        {
+            switch (typeDecl)
+            {
+                case ClassDeclarationSyntax s: return s.AddMembers(items);
+                case StructDeclarationSyntax s: return s.AddMembers(items);
+                default: throw new NotSupportedException();
+            }
+        }
+
     }
 }
