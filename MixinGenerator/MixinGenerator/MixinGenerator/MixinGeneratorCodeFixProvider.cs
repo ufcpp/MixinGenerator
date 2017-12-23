@@ -13,6 +13,7 @@ using System.IO;
 using System.Collections.Generic;
 using System;
 using Microsoft.CodeAnalysis.CSharp;
+using System.Text;
 
 namespace MixinGenerator
 {
@@ -136,11 +137,10 @@ namespace MixinGenerator
 
         private static MemberDeclarationSyntax GenerateNodes(IPropertySymbol s, MixinGenerationSource gen)
         {
-            var typeName = gen.GetTypeName(s.Type);
             var mixinFieldName = gen.Field.Identifier.ValueText;
 
             var source = gen.GetBuilder();
-            source.Append("public ", typeName, " ", s.Name);
+            source.Append("public ", gen.GetTypeName(s.Type), " ", s.Name);
 
             if (s.SetMethod != null)
             {
@@ -161,7 +161,42 @@ namespace MixinGenerator
 
         private static MemberDeclarationSyntax GenerateNodes(IMethodSymbol s, MixinGenerationSource gen)
         {
-            throw new NotImplementedException();
+            var mixinFieldName = gen.Field.Identifier.ValueText;
+
+            var source = gen.GetBuilder();
+            source.Append("public ", gen.GetTypeName(s.ReturnType), " ", s.Name, "(");
+            GenerateParameters(gen, s.Parameters, source);
+            source.Append(") => ", mixinFieldName, ".", s.Name, "(");
+            GenerateArguments(gen, s.Parameters, source);
+            source.Append(");");
+
+            var m = (MethodDeclarationSyntax)ParseCompilationUnit(source.ToString()).Members[0];
+            return m
+                .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
+                .WithTrailingTrivia(gen.Field.GetTrailingTrivia())
+                ;
+        }
+
+        private static void GenerateParameters(MixinGenerationSource gen, ImmutableArray<IParameterSymbol> parameters, StringBuilder source)
+        {
+            bool first = true;
+            foreach (var p in parameters)
+            {
+                source.Append(gen.GetTypeName(p.Type), " ", p.Name);
+                if (first) first = false;
+                else source.Append(", ");
+            }
+        }
+
+        private static void GenerateArguments(MixinGenerationSource gen, ImmutableArray<IParameterSymbol> parameters, StringBuilder source)
+        {
+            bool first = true;
+            foreach (var p in parameters)
+            {
+                source.Append(p.Name);
+                if (first) first = false;
+                else source.Append(", ");
+            }
         }
 
         private static MemberDeclarationSyntax GenerateNodes(IEventSymbol s, MixinGenerationSource gen)

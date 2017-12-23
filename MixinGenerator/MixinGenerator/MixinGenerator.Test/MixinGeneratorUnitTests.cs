@@ -10,6 +10,7 @@ namespace MixinGenerator.Test
         [Fact] public void EmptySource() => VerifyCSharpByConvention();
         [Fact] public void Annotaion() => VerifyCSharpByConvention();
         [Fact] public void SimpleProperty() => VerifyCSharpByConvention();
+        [Fact] public void SimpleMethod() => VerifyCSharpByConvention();
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new MixinGeneratorCodeFixProvider();
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MixinGeneratorAnalyzer();
