@@ -1,6 +1,4 @@
-﻿using System;
-
-class Class1
+﻿partial class Class1
 {
     private MyMixin _mixin;
 }
@@ -9,6 +7,3 @@ class Class1
 struct MyMixin
 {
 }
-
-[AttributeUsage(AttributeTargets.Struct)]
-class MixinAttribute : Attribute { }

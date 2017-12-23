@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis.Text;
 using Newtonsoft.Json;
 using System;
 using Xunit;
+using System.Text.RegularExpressions;
 
 namespace TestHelper
 {
@@ -103,10 +104,17 @@ namespace TestHelper
 
             var sources = new Dictionary<string, string>();
 
-            foreach (var file in Directory.GetFiles(sourcePath, "*.csx"))
+            foreach (var file in Directory.GetFiles(sourcePath, "*.cs"))
             {
                 var code = File.ReadAllText(file);
                 var name = Path.GetFileName(file);
+                sources.Add(name, code);
+            }
+
+            foreach (var file in Directory.GetFiles(sourcePath, "*.csx"))
+            {
+                var code = File.ReadAllText(file);
+                var name = Path.GetFileNameWithoutExtension(file) + ".cs";
                 sources.Add(name, code);
             }
 
@@ -156,7 +164,8 @@ namespace TestHelper
                     actualSources.Add(doc.Name, code);
                 }
 
-                Assert.True(actualSources.Keys.SequenceEqual(expectedSources.Keys));
+                Assert.True(!actualSources.Keys.Except(expectedSources.Keys).Any());
+                Assert.True(!expectedSources.Keys.Except(actualSources.Keys).Any());
 
                 foreach (var item in actualSources)
                 {
@@ -279,28 +288,26 @@ namespace TestHelper
             }
         }
 
+        private static readonly Regex StartWithSquareBracket = new Regex(@"^\s*\[", RegexOptions.Compiled);
+
         private IEnumerable<Result> ReadResults(string path)
         {
             if (!File.Exists(path)) return Array.Empty<Result>();
 
-            try
-            {
-                var result = JsonConvert.DeserializeObject<Result>(File.ReadAllText(path));
-                return new[] { result };
-            }
-            catch
-            {
-            }
+            var json = File.ReadAllText(path);
 
-            // backward compatibility
             try
             {
-                var results = JsonConvert.DeserializeObject<Result[]>(File.ReadAllText(path));
-                return results;
+                if (StartWithSquareBracket.Match(json).Success)
+                {
+                    return JsonConvert.DeserializeObject<Result[]>(json);
+                }
+                else
+                {
+                    return new[] { JsonConvert.DeserializeObject<Result>(json) };
+                }
             }
-            catch
-            {
-            }
+            catch { }
 
             return Array.Empty<Result>();
         }
