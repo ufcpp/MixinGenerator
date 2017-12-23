@@ -15,6 +15,7 @@ namespace MixinGenerator.Test
         [Fact] public void SimpleMembers() => VerifyCSharpByConvention();
         [Fact] public void GenericMethod() => VerifyCSharpByConvention();
         [Fact] public void MultipleMixins() => VerifyCSharpByConvention();
+        [Fact] public void GenericTypes() => VerifyCSharpByConvention();
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new MixinGeneratorCodeFixProvider();
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MixinGeneratorAnalyzer();

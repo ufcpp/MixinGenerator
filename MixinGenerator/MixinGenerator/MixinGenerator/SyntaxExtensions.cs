@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -25,10 +26,36 @@ namespace MixinGenerator
 
         public static TypeDeclarationSyntax GetPartialTypeDelaration(this TypeDeclarationSyntax typeDecl)
             => CSharpSyntaxTree.ParseText($@"
-partial {typeDecl.Keyword.ValueText} {typeDecl.Identifier.Text}
+partial {typeDecl.Keyword.ValueText} {typeDecl.GetGenericName()}
 {{
 }}
 ").GetRoot().ChildNodes().OfType<TypeDeclarationSyntax>().First();
+
+        private static string GetGenericName(this TypeDeclarationSyntax typeDecl)
+        {
+            var name = typeDecl.Identifier.Text;
+
+            if (typeDecl.TypeParameterList == null)
+            {
+                return name;
+            }
+
+            var sb = new StringBuilder();
+
+            sb.Append(name, "<");
+
+            var first = true;
+            foreach (var p in typeDecl.TypeParameterList.Parameters)
+            {
+                if (first) first = false;
+                else sb.Append(", ");
+                sb.Append(p.Identifier.Text);
+            }
+
+            sb.Append(">");
+
+            return sb.ToString();
+        }
 
         public static TypeDeclarationSyntax AddMembers(this TypeDeclarationSyntax typeDecl, MemberDeclarationSyntax[] items)
         {

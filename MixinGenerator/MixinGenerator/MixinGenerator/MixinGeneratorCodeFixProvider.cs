@@ -72,7 +72,7 @@ namespace MixinGenerator
 
         private static async Task<Document> AddNewDocument(Document document, MixinGenerationSource gen)
         {
-            var newRoot = await GeneratePartialDeclaration(document, gen);
+            var newRoot = await GenerateMixinDeclaration(document, gen);
 
             var name = Path.GetFileNameWithoutExtension(document.Name);
             var generatedName = name + "." + gen.Field.Identifier.ValueText + ".cs";
@@ -84,7 +84,7 @@ namespace MixinGenerator
             else return project.AddDocument(generatedName, newRoot, document.Folders);
         }
 
-        private static async Task<CompilationUnitSyntax> GeneratePartialDeclaration(Document document, MixinGenerationSource gen)
+        private static async Task<CompilationUnitSyntax> GenerateMixinDeclaration(Document document, MixinGenerationSource gen)
         {
             var newTypeDecl = gen.DeclaringType.GetPartialTypeDelaration();
             var generatedNodes = GenerateNodes(newTypeDecl, gen).ToArray();
@@ -208,9 +208,9 @@ namespace MixinGenerator
             bool first = true;
             foreach (var p in parameters)
             {
-                source.Append(gen.GetTypeName(p.Type), " ", p.Name);
                 if (first) first = false;
                 else source.Append(", ");
+                source.Append(gen.GetTypeName(p.Type), " ", p.Name);
             }
         }
 
@@ -219,9 +219,9 @@ namespace MixinGenerator
             bool first = true;
             foreach (var p in parameters)
             {
-                source.Append(p.Name);
                 if (first) first = false;
                 else source.Append(", ");
+                source.Append(p.Name);
             }
         }
     }
