@@ -24,12 +24,15 @@ namespace MixinGenerator
             }
         }
 
-        public static TypeDeclarationSyntax GetPartialTypeDelaration(this TypeDeclarationSyntax typeDecl)
-            => CSharpSyntaxTree.ParseText($@"
-partial {typeDecl.Keyword.ValueText} {typeDecl.GetGenericName()}
-{{
-}}
-").GetRoot().ChildNodes().OfType<TypeDeclarationSyntax>().First();
+        public static TypeDeclarationSyntax GetPartialTypeDeclaration(this TypeDeclarationSyntax typeDecl, StringBuilder source)
+        {
+            source.Append("partial ", typeDecl.Keyword.ValueText, " ", typeDecl.GetGenericName());
+            source.Append(@"
+{
+}
+");
+            return (TypeDeclarationSyntax)ParseCompilationUnit(source.ToString()).Members[0];
+        }
 
         private static string GetGenericName(this TypeDeclarationSyntax typeDecl)
         {
@@ -67,5 +70,14 @@ partial {typeDecl.Keyword.ValueText} {typeDecl.GetGenericName()}
             }
         }
 
+        public static TypeDeclarationSyntax AddBaseListTypes(this TypeDeclarationSyntax typeDecl, params BaseTypeSyntax[] items)
+        {
+            switch (typeDecl)
+            {
+                case ClassDeclarationSyntax s: return s.AddBaseListTypes(items);
+                case StructDeclarationSyntax s: return s.AddBaseListTypes(items);
+                default: throw new NotSupportedException();
+            }
+        }
     }
 }

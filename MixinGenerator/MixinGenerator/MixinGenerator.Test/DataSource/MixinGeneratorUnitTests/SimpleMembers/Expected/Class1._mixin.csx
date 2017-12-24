@@ -1,5 +1,4 @@
-﻿
-partial class Class1
+﻿partial class Class1
 {
     public int Value { get => _mixin.Value; set => _mixin.Value = value; }
     public event System.Action A { add => _mixin.A += value; remove => _mixin.A -= value; }

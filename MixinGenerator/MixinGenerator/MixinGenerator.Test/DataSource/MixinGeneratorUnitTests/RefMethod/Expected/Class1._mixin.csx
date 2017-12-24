@@ -1,5 +1,4 @@
-﻿
-partial class Class1
+﻿partial class Class1
 {
     public ref System.DateTime M1(ref System.DateTime x) => ref _mixin.M1(ref x);
     public ref readonly System.DateTime M2(in System.DateTime x) => ref _mixin.M2(in x);

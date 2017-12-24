@@ -1,5 +1,4 @@
-﻿
-partial class Class1<T>
+﻿partial class Class1<T>
 {
     public T TValue { get => _mixin.TValue; set => _mixin.TValue = value; }
     public int IValue { get => _mixin.IValue; set => _mixin.IValue = value; }

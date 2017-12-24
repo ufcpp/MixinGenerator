@@ -86,7 +86,7 @@ namespace MixinGenerator
 
         private static async Task<CompilationUnitSyntax> GenerateMixinDeclaration(Document document, MixinGenerationSource gen)
         {
-            var newTypeDecl = gen.DeclaringType.GetPartialTypeDelaration();
+            var newTypeDecl = gen.DeclaringType.GetPartialTypeDeclaration(gen.GetBuilder());
             var generatedNodes = GenerateNodes(newTypeDecl, gen).ToArray();
 
             newTypeDecl = newTypeDecl
