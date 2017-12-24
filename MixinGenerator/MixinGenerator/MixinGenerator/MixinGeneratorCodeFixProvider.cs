@@ -152,7 +152,7 @@ namespace MixinGenerator
 
             return ParseCompilationUnit(source.ToString()).Members[0]
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
-                .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
+                .WithTrailingTrivia(CarriageReturnLineFeed);
         }
 
         private static MemberDeclarationSyntax GenerateNodes(IEventSymbol s, MixinGenerationSource gen)
@@ -164,7 +164,7 @@ namespace MixinGenerator
 
             return ParseCompilationUnit(source.ToString()).Members[0]
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
-                .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
+                .WithTrailingTrivia(CarriageReturnLineFeed);
         }
 
         private static MemberDeclarationSyntax GenerateNodes(IMethodSymbol s, MixinGenerationSource gen)
@@ -184,7 +184,7 @@ namespace MixinGenerator
 
             return ParseCompilationUnit(source.ToString()).Members[0]
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
-                .WithTrailingTrivia(gen.Field.GetTrailingTrivia());
+                .WithTrailingTrivia(CarriageReturnLineFeed);
         }
 
         private static void GenerateGenericMethodName(IMethodSymbol m, StringBuilder source)
@@ -252,6 +252,7 @@ namespace MixinGenerator
             {
                 if (first) first = false;
                 else source.Append(", ");
+                GenerateRefness(p.RefKind, false, source);
                 source.Append(gen.GetTypeName(p.Type), " ", p.Name);
             }
         }
@@ -263,7 +264,25 @@ namespace MixinGenerator
             {
                 if (first) first = false;
                 else source.Append(", ");
+                GenerateRefness(p.RefKind, false, source);
                 source.Append(p.Name);
+            }
+        }
+
+        private static void GenerateRefness(RefKind kind, bool isReturn, StringBuilder source)
+        {
+            switch (kind)
+            {
+                case RefKind.Ref:
+                    source.Append("ref ");
+                    break;
+                case RefKind.Out:
+                    source.Append("out ");
+                    break;
+                case RefKind.In:
+                    if (isReturn) source.Append("ref readonly ");
+                    else source.Append("in ");
+                    break;
             }
         }
     }
