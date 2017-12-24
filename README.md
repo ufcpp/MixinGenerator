@@ -1,12 +1,18 @@
 # MixinGenerator
-A Code-Aware library for giving additional functionality by composition-over-inheritance, a mixin-like approach.
 
-Like Golong's annonymous fields
+- analyzer & code fix: [MixinGenerator](https://www.nuget.org/packages/MixinGenerator/)
+- common mixins: [MixinGenerator.Mixins](https://www.nuget.org/packages/MixinGenerator.Mixins/)
 
-# Requirement
+## How to use
 
-for .NET
+1. Composition
 
-requires Visual Studio 2015
+![Composition](docs/Composition.png)
 
-by using .NET Compiler Platform (Roslyn)
+2. Quick Action (C# Analyzer & Code Fix))
+
+![Code Fix](docs/CodeFix.png)
+
+3. Delegation (Generated Source Code)
+
+![Delegation](docs/Delegation.png)
