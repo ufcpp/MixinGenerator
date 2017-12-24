@@ -267,8 +267,8 @@ namespace MixinGenerator
                 }
                 foreach (var arg in a.NamedArguments)
                 {
-                    if (arg.Value.Type.Name == "Accessibility") ;
-                    return arg.Value.Value as int?;
+                    if (arg.Value.Type.Name == "Accessibility")
+                        return arg.Value.Value as int?;
                 }
             }
 
