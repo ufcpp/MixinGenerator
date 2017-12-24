@@ -1,6 +1,9 @@
 ﻿using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Composition;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -9,9 +12,6 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using System.IO;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MixinGenerator
 {
@@ -187,7 +187,7 @@ namespace MixinGenerator
         private static MemberDeclarationSyntax GenerateNode(IPropertySymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append(MemberAccessibility(s), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.Type), " ", s.Name);
+            source.Append(s.MemberAccessibility(), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.Type), " ", s.Name);
 
             if (s.SetMethod != null)
             {
@@ -207,7 +207,7 @@ namespace MixinGenerator
         private static MemberDeclarationSyntax GenerateNode(IEventSymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append(MemberAccessibility(s), "event ", gen.GetTypeName(s.Type), " ", s.Name)
+            source.Append(s.MemberAccessibility(), "event ", gen.GetTypeName(s.Type), " ", s.Name)
                 .Append(" { add => ", gen.FieldName, ".", s.Name, " += value;")
                 .Append(" remove => ", gen.FieldName, ".", s.Name, " -= value; }");
 
@@ -219,7 +219,7 @@ namespace MixinGenerator
         private static MemberDeclarationSyntax GenerateNode(IMethodSymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append(MemberAccessibility(s), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.ReturnType), " ");
+            source.Append(s.MemberAccessibility(), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.ReturnType), " ");
             GenerateGenericMethodName(s, source);
             source.Append("(");
             GenerateParameters(gen, s.Parameters, source);
@@ -234,45 +234,6 @@ namespace MixinGenerator
             return ParseCompilationUnit(source.ToString()).Members[0]
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
                 .WithTrailingTrivia(CarriageReturnLineFeed);
-        }
-
-        private static string MemberAccessibility(ISymbol s)
-        {
-            foreach (var a in s.GetAttributes())
-            {
-                var value = GetAccessibility(a);
-
-                switch (GetAccessibility(a))
-                {
-                    case 1: return "private ";
-                    case 2: return "private protected ";
-                    case 3: return "protected ";
-                    case 4: return "internal ";
-                    case 5: return "protected internal ";
-                    default: return "public ";
-                }
-            }
-
-            return "public ";
-        }
-
-        private static int? GetAccessibility(AttributeData a)
-        {
-            if (a.AttributeClass.Name == "AccessibilityAttribute")
-            {
-                foreach (var arg in a.ConstructorArguments)
-                {
-                    if (arg.Type.Name == "Accessibility")
-                        return arg.Value as int?;
-                }
-                foreach (var arg in a.NamedArguments)
-                {
-                    if (arg.Value.Type.Name == "Accessibility")
-                        return arg.Value.Value as int?;
-                }
-            }
-
-            return null;
         }
 
         private static void GenerateGenericMethodName(IMethodSymbol m, StringBuilder source)
@@ -338,6 +299,7 @@ namespace MixinGenerator
             bool first = true;
             foreach (var p in parameters)
             {
+
                 if (first) first = false;
                 else source.Append(", ");
                 source.Append(Refness(p.RefKind, RefPlace.ParameterType), gen.GetTypeName(p.Type), " ", p.Name);

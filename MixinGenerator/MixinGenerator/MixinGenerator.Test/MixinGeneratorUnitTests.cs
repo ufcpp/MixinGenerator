@@ -20,6 +20,7 @@ namespace MixinGenerator.Test
         [Fact] public void RefMethod() => VerifyCSharpByConvention();
         [Fact] public void InterfaceImplementation() => VerifyCSharpByConvention();
         [Fact] public void Accessibility() => VerifyCSharpByConvention();
+        [Fact] public void ThisReceiver() => VerifyCSharpByConvention();
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new MixinGeneratorCodeFixProvider();
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MixinGeneratorAnalyzer();
