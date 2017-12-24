@@ -24,42 +24,6 @@ namespace MixinGenerator
             }
         }
 
-        public static TypeDeclarationSyntax GetPartialTypeDeclaration(this TypeDeclarationSyntax typeDecl, StringBuilder source)
-        {
-            source.Append("partial ", typeDecl.Keyword.ValueText, " ", typeDecl.GetGenericName());
-            source.Append(@"
-{
-}
-");
-            return (TypeDeclarationSyntax)ParseCompilationUnit(source.ToString()).Members[0];
-        }
-
-        private static string GetGenericName(this TypeDeclarationSyntax typeDecl)
-        {
-            var name = typeDecl.Identifier.Text;
-
-            if (typeDecl.TypeParameterList == null)
-            {
-                return name;
-            }
-
-            var sb = new StringBuilder();
-
-            sb.Append(name, "<");
-
-            var first = true;
-            foreach (var p in typeDecl.TypeParameterList.Parameters)
-            {
-                if (first) first = false;
-                else sb.Append(", ");
-                sb.Append(p.Identifier.Text);
-            }
-
-            sb.Append(">");
-
-            return sb.ToString();
-        }
-
         public static TypeDeclarationSyntax AddMembers(this TypeDeclarationSyntax typeDecl, MemberDeclarationSyntax[] items)
         {
             switch (typeDecl)

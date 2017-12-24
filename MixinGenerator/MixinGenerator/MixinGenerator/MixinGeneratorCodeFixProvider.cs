@@ -11,8 +11,6 @@ using Microsoft.CodeAnalysis.Formatting;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using System.IO;
 using System.Collections.Generic;
-using System;
-using Microsoft.CodeAnalysis.CSharp;
 using System.Text;
 
 namespace MixinGenerator
@@ -86,7 +84,7 @@ namespace MixinGenerator
 
         private static async Task<CompilationUnitSyntax> GenerateMixinDeclaration(Document document, MixinGenerationSource gen)
         {
-            var newTypeDecl = gen.DeclaringType.GetPartialTypeDeclaration(gen.GetBuilder());
+            var newTypeDecl = GetPartialTypeDeclaration(gen);
             var generatedNodes = GenerateNodes(newTypeDecl, gen).ToArray();
 
             newTypeDecl = newTypeDecl
@@ -113,6 +111,57 @@ namespace MixinGenerator
                 .AddMembers(topDecl)
                 .WithTrailingTrivia(CarriageReturnLineFeed)
                 .WithAdditionalAnnotations(Formatter.Annotation);
+        }
+
+        private static TypeDeclarationSyntax GetPartialTypeDeclaration(MixinGenerationSource gen)
+        {
+            var typeDecl = gen.DeclaringType;
+            var source = gen.GetBuilder();
+
+            source.Append("partial ", typeDecl.Keyword.ValueText, " ");
+            AppendGenericName(typeDecl, source);
+            AppendInterfaces(gen, source);
+            source.Append(@"
+{
+}
+");
+            return (TypeDeclarationSyntax)ParseCompilationUnit(source.ToString()).Members[0];
+        }
+
+        private static void AppendInterfaces(MixinGenerationSource gen, StringBuilder source)
+        {
+            var interfaces = gen.MixinType.Type.Interfaces;
+            if (interfaces.Length > 0)
+            {
+                source.Append(" : ");
+
+                bool first = true;
+                foreach (var i in interfaces)
+                {
+                    if (first) first = false;
+                    else source.Append(", ");
+                    source.Append(gen.GetTypeName(i));
+                }
+            }
+        }
+
+        private static void AppendGenericName(TypeDeclarationSyntax typeDecl, StringBuilder source)
+        {
+            source.Append(typeDecl.Identifier.Text);
+
+            if (typeDecl.TypeParameterList == null) return;
+
+            source.Append("<");
+
+            var first = true;
+            foreach (var p in typeDecl.TypeParameterList.Parameters)
+            {
+                if (first) first = false;
+                else source.Append(", ");
+                source.Append(p.Identifier.Text);
+            }
+
+            source.Append(">");
         }
 
         private static IEnumerable<MemberDeclarationSyntax> GenerateNodes(TypeDeclarationSyntax typeDecl, MixinGenerationSource gen)
