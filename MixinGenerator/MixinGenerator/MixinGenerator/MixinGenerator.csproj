@@ -9,22 +9,20 @@
   
   <PropertyGroup>
     <PackageId>MixinGenerator</PackageId>
-    <PackageVersion>0.0.0.1</PackageVersion>
+    <PackageVersion>0.1.0</PackageVersion>
     <Authors>Nobuyuki Iwanaga</Authors>
     <PackageLicenseUrl>https://github.com/ufcpp/MixinGenerator/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ufcpp/MixinGenerator/</PackageProjectUrl>
-    <PackageIconUrl></PackageIconUrl>
     <RepositoryUrl>https://github.com/ufcpp/MixinGenerator/</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>MixinGenerator</Description>
-    <PackageReleaseNotes>beta release.</PackageReleaseNotes>
-    <Copyright>Copyright</Copyright>
-    <PackageTags>MixinGenerator, analyzers</PackageTags>
+    <Description>generate mixin codes with code analyzer/fix provider</Description>
+    <PackageReleaseNotes>initial release.</PackageReleaseNotes>
+    <PackageTags>Mixin, analyzer, code fix, source generator</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <Version>0.0.1</Version>
+    <Version>0.1.0</Version>
     <Company>Nobuyuki Iwanaga</Company>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
-    <FileVersion>0.0.1.0</FileVersion>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
   </PropertyGroup>
    
   <ItemGroup>

@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixinGenerator", "MixinGenerator\MixinGenerator\MixinGenerator.csproj", "{CC552C73-1EA3-457B-8E98-2D5D3213C5C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MixinGenerator", "MixinGenerator\MixinGenerator\MixinGenerator.csproj", "{CC552C73-1EA3-457B-8E98-2D5D3213C5C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixinGenerator.Test", "MixinGenerator\MixinGenerator.Test\MixinGenerator.Test.csproj", "{88F29EA0-BB85-4E16-AF40-E48B69085017}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MixinGenerator.Test", "MixinGenerator\MixinGenerator.Test\MixinGenerator.Test.csproj", "{88F29EA0-BB85-4E16-AF40-E48B69085017}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixinGenerator.Vsix", "MixinGenerator\MixinGenerator.Vsix\MixinGenerator.Vsix.csproj", "{6830D342-6930-43F8-AA43-2E222DE700E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixinGenerator.Vsix", "MixinGenerator\MixinGenerator.Vsix\MixinGenerator.Vsix.csproj", "{82193301-CA7B-41C0-BCEF-01503E0A15EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MixinGenerator.Mixins", "MixinGenerator.Mixins\MixinGenerator.Mixins.csproj", "{CE73F795-8AE0-483D-8787-5E744C685B15}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +25,14 @@ Global
 		{88F29EA0-BB85-4E16-AF40-E48B69085017}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{88F29EA0-BB85-4E16-AF40-E48B69085017}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{88F29EA0-BB85-4E16-AF40-E48B69085017}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6830D342-6930-43F8-AA43-2E222DE700E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6830D342-6930-43F8-AA43-2E222DE700E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6830D342-6930-43F8-AA43-2E222DE700E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6830D342-6930-43F8-AA43-2E222DE700E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82193301-CA7B-41C0-BCEF-01503E0A15EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82193301-CA7B-41C0-BCEF-01503E0A15EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82193301-CA7B-41C0-BCEF-01503E0A15EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82193301-CA7B-41C0-BCEF-01503E0A15EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE73F795-8AE0-483D-8787-5E744C685B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE73F795-8AE0-483D-8787-5E744C685B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE73F795-8AE0-483D-8787-5E744C685B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE73F795-8AE0-483D-8787-5E744C685B15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
