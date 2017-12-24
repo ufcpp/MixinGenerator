@@ -1,0 +1,10 @@
+﻿[
+  {
+    "id": "Mixin",
+    "sevirity": "Info",
+    "line": 5,
+    "column": 35,
+    "path": "Class1.cs",
+    "message-args": [ "NotifyPropertyChanged" ]
+  }
+]
