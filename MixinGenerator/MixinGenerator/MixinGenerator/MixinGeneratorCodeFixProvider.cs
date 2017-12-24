@@ -299,6 +299,7 @@ namespace MixinGenerator
             bool first = true;
             foreach (var p in parameters)
             {
+                if (p.IsThisReceiver()) continue;
 
                 if (first) first = false;
                 else source.Append(", ");
@@ -313,7 +314,9 @@ namespace MixinGenerator
             {
                 if (first) first = false;
                 else source.Append(", ");
-                source.Append(Refness(p.RefKind, RefPlace.ParameterType), p.Name);
+
+                var name = p.IsThisReceiver() ? "this" : p.Name;
+                source.Append(Refness(p.RefKind, RefPlace.ParameterType), name);
             }
         }
 

@@ -1,12 +1,22 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MixinGenerator
 {
     static class AttributeExtensions
     {
+        /// <summary>
+        /// has `This` attribute.
+        /// </summary>
+        public static bool IsThisReceiver(this IParameterSymbol s)
+        {
+            foreach (var a in s.GetAttributes())
+            {
+                if (a.AttributeClass.Name == "ThisAttribute") return true;
+            }
+
+            return false;
+        }
+
         public static string MemberAccessibility(this ISymbol s)
         {
             foreach (var a in s.GetAttributes())
