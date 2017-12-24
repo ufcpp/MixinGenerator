@@ -174,7 +174,9 @@ namespace MixinGenerator
             GenerateGenericMethodName(s, source);
             source.Append("(");
             GenerateParameters(gen, s.Parameters, source);
-            source.Append(") => ", gen.FieldName, ".");
+            source.Append(")");
+            GenerateGenericConstraints(gen, s, source);
+            source.Append(" => ", gen.FieldName, ".");
             GenerateGenericMethodName(s, source);
             source.Append("(");
             GenerateArguments(s.Parameters, source);
@@ -195,11 +197,51 @@ namespace MixinGenerator
                 bool first = true;
                 foreach (var a in m.TypeArguments)
                 {
-                    source.Append(a.Name);
                     if (first) first = false;
                     else source.Append(", ");
+                    source.Append(a.Name);
                 }
                 source.Append(">");
+            }
+        }
+
+        private static void GenerateGenericConstraints(MixinGenerationSource gen, IMethodSymbol m, StringBuilder source)
+        {
+            if (!m.IsGenericMethod) return;
+
+            foreach (var p in m.TypeParameters)
+            {
+                if (!p.HasReferenceTypeConstraint && !p.HasValueTypeConstraint && !p.HasConstructorConstraint && p.ConstraintTypes.Length == 0) continue;
+
+                source.Append(" where ", p.Name, " :");
+
+                bool first = true;
+
+                if (p.HasReferenceTypeConstraint)
+                {
+                    source.Append(" class");
+                    first = false;
+                }
+
+                if (p.HasValueTypeConstraint)
+                {
+                    source.Append(" struct");
+                    first = false;
+                }
+
+                foreach (var c in p.ConstraintTypes)
+                {
+                    if (first) first = false;
+                    else source.Append(", ");
+                    source.Append(gen.GetTypeName(c));
+                }
+
+                if (p.HasConstructorConstraint)
+                {
+                    if (first) first = false;
+                    else source.Append(", ");
+                    source.Append(" new()");
+                }
             }
         }
 
