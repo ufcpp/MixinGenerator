@@ -138,7 +138,7 @@ namespace MixinGenerator
         private static MemberDeclarationSyntax GenerateNodes(IPropertySymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append("public ", gen.GetTypeName(s.Type), " ", s.Name);
+            source.Append("public ", Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.Type), " ", s.Name);
 
             if (s.SetMethod != null)
             {
@@ -147,7 +147,7 @@ namespace MixinGenerator
             }
             else
             {
-                source.Append(" => ", gen.FieldName, ".", s.Name, ";");
+                source.Append(" => ", Refness(s.RefKind, RefPlace.ReturnStatement), gen.FieldName, ".", s.Name, ";");
             }
 
             return ParseCompilationUnit(source.ToString()).Members[0]
@@ -170,13 +170,13 @@ namespace MixinGenerator
         private static MemberDeclarationSyntax GenerateNodes(IMethodSymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append("public ", gen.GetTypeName(s.ReturnType), " ");
+            source.Append("public ", Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.ReturnType), " ");
             GenerateGenericMethodName(s, source);
             source.Append("(");
             GenerateParameters(gen, s.Parameters, source);
             source.Append(")");
             GenerateGenericConstraints(gen, s, source);
-            source.Append(" => ", gen.FieldName, ".");
+            source.Append(" => ", Refness(s.RefKind, RefPlace.ReturnStatement), gen.FieldName, ".");
             GenerateGenericMethodName(s, source);
             source.Append("(");
             GenerateArguments(s.Parameters, source);
@@ -252,8 +252,7 @@ namespace MixinGenerator
             {
                 if (first) first = false;
                 else source.Append(", ");
-                GenerateRefness(p.RefKind, false, source);
-                source.Append(gen.GetTypeName(p.Type), " ", p.Name);
+                source.Append(Refness(p.RefKind, RefPlace.ParameterType), gen.GetTypeName(p.Type), " ", p.Name);
             }
         }
 
@@ -264,25 +263,32 @@ namespace MixinGenerator
             {
                 if (first) first = false;
                 else source.Append(", ");
-                GenerateRefness(p.RefKind, false, source);
-                source.Append(p.Name);
+                source.Append(Refness(p.RefKind, RefPlace.ParameterType), p.Name);
             }
         }
 
-        private static void GenerateRefness(RefKind kind, bool isReturn, StringBuilder source)
+        enum RefPlace
+        {
+            ParameterType,
+            ReturnType,
+            ReturnStatement,
+        }
+
+        private static string Refness(RefKind kind, RefPlace place)
         {
             switch (kind)
             {
-                case RefKind.Ref:
-                    source.Append("ref ");
-                    break;
-                case RefKind.Out:
-                    source.Append("out ");
-                    break;
+                case RefKind.Ref: return "ref ";
+                case RefKind.Out: return "out ";
                 case RefKind.In:
-                    if (isReturn) source.Append("ref readonly ");
-                    else source.Append("in ");
-                    break;
+                    switch (place)
+                    {
+                        case RefPlace.ParameterType: return "in ";
+                        case RefPlace.ReturnType: return "ref readonly ";
+                        case RefPlace.ReturnStatement: return "ref ";
+                        default: return "";
+                    }
+                default: return "";
             }
         }
     }
