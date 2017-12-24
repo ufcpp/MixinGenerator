@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace MixinGenerator.Mixins
 {
+    [NonCopyable]
     [Mixin]
     public struct NotifyPropertyChanged : INotifyPropertyChanged
     {

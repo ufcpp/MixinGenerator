@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace MixinGenerator.Mixins
 {
+    [NonCopyable]
     [Mixin]
     public struct DisposableList : IDisposable
     {
