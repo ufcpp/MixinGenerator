@@ -171,23 +171,23 @@ namespace MixinGenerator
                 switch (m)
                 {
                     case IPropertySymbol s:
-                        yield return GenerateNodes(s, gen);
+                        yield return GenerateNode(s, gen);
                         break;
                     case IMethodSymbol s when s.MethodKind == MethodKind.Ordinary:
-                        yield return GenerateNodes(s, gen);
+                        yield return GenerateNode(s, gen);
                         break;
                     case IEventSymbol s:
-                        yield return GenerateNodes(s, gen);
+                        yield return GenerateNode(s, gen);
                         break;
                 }
             }
             yield break;
         }
 
-        private static MemberDeclarationSyntax GenerateNodes(IPropertySymbol s, MixinGenerationSource gen)
+        private static MemberDeclarationSyntax GenerateNode(IPropertySymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append("public ", Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.Type), " ", s.Name);
+            source.Append(MemberAccessibility(s), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.Type), " ", s.Name);
 
             if (s.SetMethod != null)
             {
@@ -204,10 +204,10 @@ namespace MixinGenerator
                 .WithTrailingTrivia(CarriageReturnLineFeed);
         }
 
-        private static MemberDeclarationSyntax GenerateNodes(IEventSymbol s, MixinGenerationSource gen)
+        private static MemberDeclarationSyntax GenerateNode(IEventSymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append("public event ", gen.GetTypeName(s.Type), " ", s.Name)
+            source.Append(MemberAccessibility(s), "event ", gen.GetTypeName(s.Type), " ", s.Name)
                 .Append(" { add => ", gen.FieldName, ".", s.Name, " += value;")
                 .Append(" remove => ", gen.FieldName, ".", s.Name, " -= value; }");
 
@@ -216,10 +216,10 @@ namespace MixinGenerator
                 .WithTrailingTrivia(CarriageReturnLineFeed);
         }
 
-        private static MemberDeclarationSyntax GenerateNodes(IMethodSymbol s, MixinGenerationSource gen)
+        private static MemberDeclarationSyntax GenerateNode(IMethodSymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append("public ", Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.ReturnType), " ");
+            source.Append(MemberAccessibility(s), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.ReturnType), " ");
             GenerateGenericMethodName(s, source);
             source.Append("(");
             GenerateParameters(gen, s.Parameters, source);
@@ -234,6 +234,45 @@ namespace MixinGenerator
             return ParseCompilationUnit(source.ToString()).Members[0]
                 .WithLeadingTrivia(gen.Field.GetLeadingTrivia())
                 .WithTrailingTrivia(CarriageReturnLineFeed);
+        }
+
+        private static string MemberAccessibility(ISymbol s)
+        {
+            foreach (var a in s.GetAttributes())
+            {
+                var value = GetAccessibility(a);
+
+                switch (GetAccessibility(a))
+                {
+                    case 1: return "private ";
+                    case 2: return "private protected ";
+                    case 3: return "protected ";
+                    case 4: return "internal ";
+                    case 5: return "protected internal ";
+                    default: return "public ";
+                }
+            }
+
+            return "public ";
+        }
+
+        private static int? GetAccessibility(AttributeData a)
+        {
+            if (a.AttributeClass.Name == "AccessibilityAttribute")
+            {
+                foreach (var arg in a.ConstructorArguments)
+                {
+                    if (arg.Type.Name == "Accessibility")
+                        return arg.Value as int?;
+                }
+                foreach (var arg in a.NamedArguments)
+                {
+                    if (arg.Value.Type.Name == "Accessibility") ;
+                    return arg.Value.Value as int?;
+                }
+            }
+
+            return null;
         }
 
         private static void GenerateGenericMethodName(IMethodSymbol m, StringBuilder source)
