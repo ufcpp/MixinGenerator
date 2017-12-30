@@ -68,5 +68,18 @@ namespace MixinGenerator
 
             return null;
         }
+
+        public static bool IsIgnored(this ISymbol t)
+        {
+            foreach (var a in t.GetAttributes())
+            {
+                if (a.AttributeClass.Name == "IgnoreAttribute")
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

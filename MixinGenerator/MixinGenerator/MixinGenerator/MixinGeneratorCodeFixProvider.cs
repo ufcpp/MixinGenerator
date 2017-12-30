@@ -168,6 +168,8 @@ namespace MixinGenerator
         {
             foreach (var m in gen.MixinType.Type.GetMembers())
             {
+                if (m.IsIgnored()) continue;
+
                 switch (m)
                 {
                     case IPropertySymbol s:

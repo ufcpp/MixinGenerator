@@ -21,7 +21,8 @@ namespace MixinGenerator.Mixins
         /// <remarks>
         /// This struct can be resused. If you use the Value after invoking the Dispose, the Value is re-initialized.
         /// </remarks>
-        public void DisposeValue()
+        [Ignore]
+        public void Clear()
         {
             if (_value != null)
             {
@@ -30,6 +31,7 @@ namespace MixinGenerator.Mixins
             }
         }
 
-        public bool IsValueInitialized => _value != null;
+        [Ignore]
+        public bool IsInitialized => _value != null;
     }
 }
