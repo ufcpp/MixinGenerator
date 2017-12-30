@@ -20,14 +20,11 @@ namespace MixinGenerator
         {
             var f = (IFieldSymbol)context.Symbol;
 
-            foreach (var a in f.Type.GetAttributes())
+            if (f.Type.GetMixinAttribute() != null)
             {
-                if (a.AttributeClass.Name == "MixinAttribute")
-                {
-                    var diagnostic = Diagnostic.Create(Rule, f.Locations[0], f.Type.Name);
-                    context.ReportDiagnostic(diagnostic);
-                    return;
-                }
+                var diagnostic = Diagnostic.Create(Rule, f.Locations[0], f.Type.Name);
+                context.ReportDiagnostic(diagnostic);
+                return;
             }
         }
     }

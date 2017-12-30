@@ -187,7 +187,7 @@ namespace MixinGenerator
         private static MemberDeclarationSyntax GenerateNode(IPropertySymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append(s.MemberAccessibility(), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.Type), " ", s.Name);
+            source.Append(s.MemberAccessibility(), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.Type), " ", gen.ReplaceSymbolName(s.Name));
 
             if (s.SetMethod != null)
             {
@@ -207,7 +207,7 @@ namespace MixinGenerator
         private static MemberDeclarationSyntax GenerateNode(IEventSymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append(s.MemberAccessibility(), "event ", gen.GetTypeName(s.Type), " ", s.Name)
+            source.Append(s.MemberAccessibility(), "event ", gen.GetTypeName(s.Type), " ", gen.ReplaceSymbolName(s.Name))
                 .Append(" { add => ", gen.FieldName, ".", s.Name, " += value;")
                 .Append(" remove => ", gen.FieldName, ".", s.Name, " -= value; }");
 
@@ -219,13 +219,13 @@ namespace MixinGenerator
         private static MemberDeclarationSyntax GenerateNode(IMethodSymbol s, MixinGenerationSource gen)
         {
             var source = gen.GetBuilder();
-            source.Append(s.MemberAccessibility(), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.ReturnType), " ");
+            source.Append(s.MemberAccessibility(), Refness(s.RefKind, RefPlace.ReturnType), gen.GetTypeName(s.ReturnType), " ", gen.ReplaceSymbolName(s.Name));
             GenerateGenericMethodName(s, source);
             source.Append("(");
             GenerateParameters(gen, s.Parameters, source);
             source.Append(")");
             GenerateGenericConstraints(gen, s, source);
-            source.Append(" => ", Refness(s.RefKind, RefPlace.ReturnStatement), gen.FieldName, ".");
+            source.Append(" => ", Refness(s.RefKind, RefPlace.ReturnStatement), gen.FieldName, ".", s.Name);
             GenerateGenericMethodName(s, source);
             source.Append("(");
             GenerateArguments(s.Parameters, source);
@@ -238,8 +238,6 @@ namespace MixinGenerator
 
         private static void GenerateGenericMethodName(IMethodSymbol m, StringBuilder source)
         {
-            source.Append(m.Name);
-
             if (m.IsGenericMethod)
             {
                 source.Append("<");

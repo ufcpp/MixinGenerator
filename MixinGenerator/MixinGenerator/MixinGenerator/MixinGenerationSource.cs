@@ -16,6 +16,10 @@ namespace MixinGenerator
         public TypeDeclarationSyntax DeclaringType { get; }
         public CancellationToken CancellationToken { get; }
 
+        public AttributeData MixinAttribute { get; }
+        public string ReplaceToField { get; }
+        public string PascalCaceFieldName { get; }
+
         public MixinGenerationSource(SemanticModel semanticModel, VariableDeclaratorSyntax field, TypeInfo mixinType, TypeDeclarationSyntax declaringType, CancellationToken cancellationToken)
         {
             SemanticModel = semanticModel;
@@ -23,6 +27,20 @@ namespace MixinGenerator
             Field = field;
             MixinType = mixinType;
             CancellationToken = cancellationToken;
+
+            var a = mixinType.Type.GetMixinAttribute();
+            if(a != null)
+            {
+                MixinAttribute = a;
+
+                //todo: needs to check parameter name?
+                var args = a.ConstructorArguments;
+                if (args.Length > 0)
+                {
+                    ReplaceToField = args[0].Value as string;
+                    PascalCaceFieldName = field.Identifier.ValueText.ToPascalCase();
+                }
+            }
         }
 
         public static async Task<MixinGenerationSource> Create(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
@@ -53,5 +71,11 @@ namespace MixinGenerator
         }
 
         public string GetTypeName(ITypeSymbol t) => t.ToMinimalDisplayString(SemanticModel, 0);
+
+        public string ReplaceSymbolName(string symbolName)
+        {
+            if (ReplaceToField == null) return symbolName;
+            return symbolName.Replace(ReplaceToField, PascalCaceFieldName);
+        }
     }
 }

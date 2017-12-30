@@ -55,5 +55,18 @@ namespace MixinGenerator
 
             return null;
         }
+
+        public static AttributeData GetMixinAttribute(this ITypeSymbol t)
+        {
+            foreach (var a in t.GetAttributes())
+            {
+                if (a.AttributeClass.Name == "MixinAttribute")
+                {
+                    return a;
+                }
+            }
+
+            return null;
+        }
     }
 }

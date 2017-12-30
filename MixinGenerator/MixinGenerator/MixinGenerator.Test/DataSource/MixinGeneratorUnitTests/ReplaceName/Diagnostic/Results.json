@@ -1,0 +1,18 @@
+﻿[
+  {
+    "id": "Mixin",
+    "sevirity": "Info",
+    "line": 3,
+    "column": 24,
+    "path": "Class1.cs",
+    "message-args": [ "MyMixin" ]
+  },
+  {
+    "id": "Mixin",
+    "sevirity": "Info",
+    "line": 4,
+    "column": 24,
+    "path": "Class1.cs",
+    "message-args": [ "MyMixin" ]
+  }
+]

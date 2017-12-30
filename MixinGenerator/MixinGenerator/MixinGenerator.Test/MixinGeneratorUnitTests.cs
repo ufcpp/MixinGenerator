@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis.CodeFixes;
+﻿using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using TestHelper;
 using Xunit;
@@ -21,8 +23,19 @@ namespace MixinGenerator.Test
         [Fact] public void InterfaceImplementation() => VerifyCSharpByConvention();
         [Fact] public void Accessibility() => VerifyCSharpByConvention();
         [Fact] public void ThisReceiver() => VerifyCSharpByConvention();
+        [Fact] public void ReplaceName() => VerifyCSharpByConvention();
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new MixinGeneratorCodeFixProvider();
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MixinGeneratorAnalyzer();
+
+        protected override IEnumerable<MetadataReference> References
+        {
+            get
+            {
+                foreach (var r in base.References) yield return r;
+                yield return MetadataReference.CreateFromFile(GetType().Assembly.Location);
+                yield return MetadataReference.CreateFromFile(typeof(Annotations.MixinAttribute).Assembly.Location);
+            }
+        }
     }
 }

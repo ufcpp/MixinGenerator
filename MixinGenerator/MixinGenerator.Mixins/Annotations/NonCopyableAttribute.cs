@@ -2,7 +2,7 @@
 
 namespace MixinGenerator.Annotations
 {
-    [AttributeUsage(AttributeTargets.Struct)]
+    [AttributeUsage(AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]
     public class NonCopyableAttribute : Attribute
     {
     }
