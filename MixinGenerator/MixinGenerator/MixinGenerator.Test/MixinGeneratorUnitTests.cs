@@ -24,6 +24,7 @@ namespace MixinGenerator.Test
         [Fact] public void Accessibility() => VerifyCSharpByConvention();
         [Fact] public void ThisReceiver() => VerifyCSharpByConvention();
         [Fact] public void ReplaceName() => VerifyCSharpByConvention();
+        [Fact] public void DifferentAssembly() => VerifyCSharpByConvention();
 
         protected override CodeFixProvider GetCSharpCodeFixProvider() => new MixinGeneratorCodeFixProvider();
         protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new MixinGeneratorAnalyzer();

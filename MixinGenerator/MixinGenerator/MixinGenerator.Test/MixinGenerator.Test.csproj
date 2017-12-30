@@ -17,10 +17,6 @@
     <ProjectReference Include="..\MixinGenerator\MixinGenerator.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="TestTypes\" />
-  </ItemGroup>
-
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>
